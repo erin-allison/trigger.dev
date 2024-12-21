@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Form } from "@remix-run/react";
-import { GitHubDarkIcon } from "@trigger.dev/companyicons";
+import { GitHubDarkIcon, MicrosoftAzureIcon } from "@trigger.dev/companyicons";
 import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
 import { LoginPageLayout } from "~/components/LoginPageLayout";
 import { Button, LinkButton } from "~/components/primitives/Buttons";
@@ -9,7 +9,7 @@ import { Header1 } from "~/components/primitives/Headers";
 import { NamedIcon } from "~/components/primitives/NamedIcon";
 import { Paragraph } from "~/components/primitives/Paragraph";
 import { TextLink } from "~/components/primitives/TextLink";
-import { isGithubAuthSupported } from "~/services/auth.server";
+import { isGithubAuthSupported, isMicrosoftAuthSupported } from "~/services/auth.server";
 import { commitSession, setRedirectTo } from "~/services/redirectTo.server";
 import { getUserId } from "~/services/session.server";
 import { requestUrl } from "~/utils/requestUrl.server";
@@ -48,7 +48,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const session = await setRedirectTo(request, redirectTo);
 
     return typedjson(
-      { redirectTo, showGithubAuth: isGithubAuthSupported },
+      { redirectTo, showGithubAuth: isGithubAuthSupported, showMicrosoftAuth: isMicrosoftAuthSupported },
       {
         headers: {
           "Set-Cookie": await commitSession(session),
@@ -59,6 +59,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return typedjson({
       redirectTo: null,
       showGithubAuth: isGithubAuthSupported,
+      showMicrosoftAuth: isMicrosoftAuthSupported
     });
   }
 }
@@ -68,11 +69,6 @@ export default function LoginPage() {
 
   return (
     <LoginPageLayout>
-      <Form
-        action={`/auth/github${data.redirectTo ? `?redirectTo=${data.redirectTo}` : ""}`}
-        method="post"
-        className="w-full"
-      >
         <div className="flex flex-col items-center">
           <Header1 className="pb-4 font-semibold sm:text-2xl md:text-3xl lg:text-4xl">
             Welcome
@@ -83,6 +79,11 @@ export default function LoginPage() {
           <Fieldset className="w-full">
             <div className="flex flex-col gap-y-2">
               {data.showGithubAuth && (
+                <Form
+                  action={`/auth/github${data.redirectTo ? `?redirectTo=${data.redirectTo}` : ""}`}
+                  method="post"
+                  className="w-full"
+                >
                 <Button
                   type="submit"
                   variant="primary/extra-large"
@@ -92,6 +93,24 @@ export default function LoginPage() {
                   <GitHubDarkIcon className={"mr-2 size-5"} />
                   <span className="text-charcoal-900">Continue with GitHub</span>
                 </Button>
+                </Form>
+              )}
+              {data.showMicrosoftAuth && (
+                <Form
+                  action={`/auth/microsoft${data.redirectTo ? `?redirectTo=${data.redirectTo}` : ""}`}
+                  method="post"
+                  className="w-full"
+                >
+                <Button
+                  type="submit"
+                  variant="primary/extra-large"
+                  fullWidth
+                  data-action="continue with microsoft"
+                >
+                  <MicrosoftAzureIcon className={"mr-2 size-5"} />
+                  <span className="text-charcoal-900">Continue with Microsoft</span>
+                </Button>
+                </Form>
               )}
               <LinkButton
                 to="/login/magic"
@@ -117,7 +136,6 @@ export default function LoginPage() {
             </Paragraph>
           </Fieldset>
         </div>
-      </Form>
     </LoginPageLayout>
   );
 }
