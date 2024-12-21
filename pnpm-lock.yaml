@@ -671,6 +671,9 @@ importers:
       remix-auth-github:
         specifier: ^1.6.0
         version: 1.6.0(@remix-run/server-runtime@2.1.0)(remix-auth@3.6.0)
+      remix-auth-microsoft:
+        specifier: ^2.0.1
+        version: 2.0.1(@remix-run/react@2.1.0)(@remix-run/server-runtime@2.1.0)
       remix-typedjson:
         specifier: 0.3.1
         version: 0.3.1(@remix-run/react@2.1.0)(@remix-run/server-runtime@2.1.0)(react@18.2.0)
@@ -30595,6 +30598,19 @@ packages:
       remix-auth: 3.6.0(@remix-run/react@2.1.0)(@remix-run/server-runtime@2.1.0)
       remix-auth-oauth2: 1.11.0(@remix-run/server-runtime@2.1.0)(remix-auth@3.6.0)
     transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /remix-auth-microsoft@2.0.1(@remix-run/react@2.1.0)(@remix-run/server-runtime@2.1.0):
+    resolution: {integrity: sha512-7utTr9/5ax9f8VKrl4x2khguD0xRtBIaJSRaHJ2qOkan0WlcwHpcC18i3bktr6UfcXqjsgZVzBDnh0eOkEbruA==}
+    peerDependencies:
+      '@remix-run/server-runtime': ^1.0.0 || ^2.0.0
+    dependencies:
+      '@remix-run/server-runtime': 2.1.0(typescript@5.2.2)
+      remix-auth: 3.6.0(@remix-run/react@2.1.0)(@remix-run/server-runtime@2.1.0)
+      remix-auth-oauth2: 1.11.0(@remix-run/server-runtime@2.1.0)(remix-auth@3.6.0)
+    transitivePeerDependencies:
+      - '@remix-run/react'
       - supports-color
     dev: false
 

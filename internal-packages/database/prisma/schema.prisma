@@ -91,6 +91,7 @@ model InvitationCode {
 enum AuthenticationMethod {
   GITHUB
   MAGIC_LINK
+  MICROSOFT
 }
 
 /// Used to generate PersonalAccessTokens, they're one-time use

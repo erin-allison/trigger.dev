@@ -1,7 +1,7 @@
 import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Form } from "@remix-run/react";
-import { GitHubLightIcon } from "@trigger.dev/companyicons";
+import { GitHubLightIcon, MicrosoftAzureIcon } from "@trigger.dev/companyicons";
 import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
 import { LoginPageLayout } from "~/components/LoginPageLayout";
 import { Button, LinkButton } from "~/components/primitives/Buttons";
@@ -10,7 +10,7 @@ import { FormError } from "~/components/primitives/FormError";
 import { Header1 } from "~/components/primitives/Headers";
 import { Paragraph } from "~/components/primitives/Paragraph";
 import { TextLink } from "~/components/primitives/TextLink";
-import { isGithubAuthSupported } from "~/services/auth.server";
+import { isGithubAuthSupported, isMicrosoftAuthSupported } from "~/services/auth.server";
 import { commitSession, setRedirectTo } from "~/services/redirectTo.server";
 import { getUserId } from "~/services/session.server";
 import { getUserSession } from "~/services/sessionStorage.server";
@@ -50,11 +50,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const session = await setRedirectTo(request, redirectTo);
 
     return typedjson(
+<<<<<<< HEAD
       {
         redirectTo,
         showGithubAuth: isGithubAuthSupported,
         authError: null,
       },
+=======
+      { redirectTo, showGithubAuth: isGithubAuthSupported, showMicrosoftAuth: isMicrosoftAuthSupported },
+>>>>>>> 693692f7f (Add Microsoft Entra ID authentication)
       {
         headers: {
           "Set-Cookie": await commitSession(session),
@@ -77,7 +81,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return typedjson({
       redirectTo: null,
       showGithubAuth: isGithubAuthSupported,
+<<<<<<< HEAD
       authError,
+=======
+      showMicrosoftAuth: isMicrosoftAuthSupported
+>>>>>>> 693692f7f (Add Microsoft Entra ID authentication)
     });
   }
 }
@@ -87,11 +95,6 @@ export default function LoginPage() {
 
   return (
     <LoginPageLayout>
-      <Form
-        action={`/auth/github${data.redirectTo ? `?redirectTo=${data.redirectTo}` : ""}`}
-        method="post"
-        className="w-full"
-      >
         <div className="flex flex-col items-center">
           <Header1 className="pb-4 font-semibold sm:text-2xl md:text-3xl lg:text-4xl">
             Welcome
@@ -102,6 +105,11 @@ export default function LoginPage() {
           <Fieldset className="w-full">
             <div className="flex flex-col items-center gap-y-2">
               {data.showGithubAuth && (
+                <Form
+                  action={`/auth/github${data.redirectTo ? `?redirectTo=${data.redirectTo}` : ""}`}
+                  method="post"
+                  className="w-full"
+                >
                 <Button
                   type="submit"
                   variant="primary/extra-large"
@@ -111,6 +119,24 @@ export default function LoginPage() {
                   <GitHubLightIcon className={"mr-2 size-5"} />
                   <span className="text-text-bright">Continue with GitHub</span>
                 </Button>
+                </Form>
+              )}
+              {data.showMicrosoftAuth && (
+                <Form
+                  action={`/auth/microsoft${data.redirectTo ? `?redirectTo=${data.redirectTo}` : ""}`}
+                  method="post"
+                  className="w-full"
+                >
+                <Button
+                  type="submit"
+                  variant="primary/extra-large"
+                  fullWidth
+                  data-action="continue with microsoft"
+                >
+                  <MicrosoftAzureIcon className={"mr-2 size-5"} />
+                  <span className="text-charcoal-900">Continue with Microsoft</span>
+                </Button>
+                </Form>
               )}
               <LinkButton
                 to="/login/magic"
@@ -137,7 +163,6 @@ export default function LoginPage() {
             </Paragraph>
           </Fieldset>
         </div>
-      </Form>
     </LoginPageLayout>
   );
 }

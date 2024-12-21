@@ -1,5 +1,6 @@
 import type { Prisma, User } from "@trigger.dev/database";
 import type { GitHubProfile } from "remix-auth-github";
+import type {MicrosoftProfile} from "remix-auth-microsoft"
 import { prisma } from "~/db.server";
 import { env } from "~/env.server";
 import {
@@ -20,7 +21,14 @@ type FindOrCreateGithub = {
   authenticationExtraParams: Record<string, unknown>;
 };
 
-type FindOrCreateUser = FindOrCreateMagicLink | FindOrCreateGithub;
+type FindOrCreateMicrosoft = {
+  authenticationMethod: "MICROSOFT",
+  email: User["email"];
+  authenticationProfile: MicrosoftProfile,
+  authenticationExtraParams: Record<string, unknown>,
+}
+
+type FindOrCreateUser = FindOrCreateMagicLink | FindOrCreateGithub | FindOrCreateMicrosoft;
 
 type LoggedInUser = {
   user: User;
@@ -34,6 +42,9 @@ export async function findOrCreateUser(input: FindOrCreateUser): Promise<LoggedI
     }
     case "MAGIC_LINK": {
       return findOrCreateMagicLinkUser(input);
+    }
+    case "MICROSOFT": {
+      return findOrCreateMicrosoftUser(input)
     }
   }
 }
@@ -165,6 +176,94 @@ export async function findOrCreateGithubUser({
 export type UserWithDashboardPreferences = User & {
   dashboardPreferences: DashboardPreferences;
 };
+
+export async function findOrCreateMicrosoftUser({
+  email,
+  authenticationProfile,
+  authenticationExtraParams
+}: FindOrCreateMicrosoft): Promise<LoggedInUser> {
+  const name = authenticationProfile._json.name
+  let avatarUrl: string | undefined = undefined;
+  if (authenticationProfile.photos?.[0]) {
+    avatarUrl = authenticationProfile.photos[0].value
+  }
+  const displayName = authenticationProfile.displayName;
+  const authProfile = authenticationProfile
+    ? (authenticationProfile as unknown as Prisma.JsonObject)
+    : undefined;
+  const authExtraParams = authenticationExtraParams
+    ? (authenticationExtraParams as unknown as Prisma.JsonObject)
+    : undefined;
+
+  const authIdentifier = `microsoft:${authenticationProfile.id}`;
+
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      authIdentifier,
+    },
+  });
+
+  const existingEmailUser = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (existingEmailUser && !existingUser) {
+    const user = await prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        authenticationProfile: authProfile,
+        authenticationExtraParams: authExtraParams,
+        avatarUrl,
+        authIdentifier,
+      },
+    });
+
+    return {
+      user,
+      isNewUser: false,
+    };
+  }
+
+  if (existingEmailUser && existingUser) {
+    const user = await prisma.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {},
+    });
+
+    return {
+      user,
+      isNewUser: false,
+    };
+  }
+
+  const user = await prisma.user.upsert({
+    where: {
+      authIdentifier,
+    },
+    update: {},
+    create: {
+      authenticationProfile: authProfile,
+      authenticationExtraParams: authExtraParams,
+      name,
+      avatarUrl,
+      displayName,
+      authIdentifier,
+      email,
+      authenticationMethod: "MICROSOFT",
+    },
+  });
+
+  return {
+    user,
+    isNewUser: !existingUser,
+  };
+}
 
 export async function getUserById(id: User["id"]) {
   const user = await prisma.user.findUnique({ where: { id } });
