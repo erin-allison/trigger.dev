@@ -18,5 +18,5 @@ fi
 
 cd /triggerdotdev/apps/webapp
 # exec dumb-init pnpm run start:local
-NODE_PATH='/triggerdotdev/node_modules/.pnpm/node_modules' exec dumb-init node --max-old-space-size "$MAX_OLD_SPACE_SIZE" ./build/server.js
+NODE_PATH='/triggerdotdev/node_modules/.pnpm/node_modules' exec dumb-init node --max-old-space-size="$MAX_OLD_SPACE_SIZE" ./build/server.js
 
