@@ -87,7 +87,8 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           dockerfile: ./docker/Dockerfile
-          tags: ${{ steps.set_tags.outputs.image_tags }}
+          tags: |
+            ghcr.io/erin-allison/trigger.dev:${{ steps.get_tag.outputs.tag }}
           push: true
           build_args: |
             BUILD_APP_VERSION=${{ steps.set_build_info.outputs.BUILD_APP_VERSION }}
