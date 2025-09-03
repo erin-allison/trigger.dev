@@ -50,15 +50,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const session = await setRedirectTo(request, redirectTo);
 
     return typedjson(
-<<<<<<< HEAD
       {
         redirectTo,
         showGithubAuth: isGithubAuthSupported,
         authError: null,
+        showMicrosoftAuth: isMicrosoftAuthSupported
       },
-=======
-      { redirectTo, showGithubAuth: isGithubAuthSupported, showMicrosoftAuth: isMicrosoftAuthSupported },
->>>>>>> 693692f7f (Add Microsoft Entra ID authentication)
       {
         headers: {
           "Set-Cookie": await commitSession(session),
@@ -81,11 +78,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return typedjson({
       redirectTo: null,
       showGithubAuth: isGithubAuthSupported,
-<<<<<<< HEAD
       authError,
-=======
       showMicrosoftAuth: isMicrosoftAuthSupported
->>>>>>> 693692f7f (Add Microsoft Entra ID authentication)
     });
   }
 }
