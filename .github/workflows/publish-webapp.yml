@@ -82,10 +82,10 @@ jobs:
       - name: 🐳 Build image and push to GitHub Container Registry
         uses: docker/build-push-action@v1
         with:
-          file: ./docker/Dockerfile
+          dockerfile: ./docker/Dockerfile
           tags: ${{ steps.set_tags.outputs.image_tags }}
           push: true
-          build-args: |
+          build_args: |
             BUILD_APP_VERSION=${{ steps.set_build_info.outputs.BUILD_APP_VERSION }}
             BUILD_GIT_SHA=${{ steps.set_build_info.outputs.BUILD_GIT_SHA }}
             BUILD_GIT_REF_NAME=${{ steps.set_build_info.outputs.BUILD_GIT_REF_NAME }}
