@@ -30606,7 +30606,7 @@ packages:
     peerDependencies:
       '@remix-run/server-runtime': ^1.0.0 || ^2.0.0
     dependencies:
-      '@remix-run/server-runtime': 2.1.0(typescript@5.2.2)
+      '@remix-run/server-runtime': 2.1.0(typescript@5.5.4)
       remix-auth: 3.6.0(@remix-run/react@2.1.0)(@remix-run/server-runtime@2.1.0)
       remix-auth-oauth2: 1.11.0(@remix-run/server-runtime@2.1.0)(remix-auth@3.6.0)
     transitivePeerDependencies:
