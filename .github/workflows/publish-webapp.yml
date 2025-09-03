@@ -45,13 +45,12 @@ jobs:
       - name: 📛 Set the tags
         id: set_tags
         run: |
-          ref_without_tag=ghcr.io/erin-allison/trigger.dev
-          image_tags=$ref_without_tag:${{ steps.get_tag.outputs.tag }}
+          image_tags=${{ steps.get_tag.outputs.tag }}
 
           # if tag is a semver, also tag it as v4
           if [[ "${{ steps.get_tag.outputs.is_semver }}" == true ]]; then
             # TODO: switch to v4 tag on GA
-            image_tags=$image_tags,$ref_without_tag:v4-beta
+            image_tags=$image_tags,v4-beta
           fi
 
           echo "image_tags=${image_tags}" >> "$GITHUB_OUTPUT"
